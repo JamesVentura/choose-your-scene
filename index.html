@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Find Your Scene — Tableau de bord du projet</title>
+<meta name="description" content="Avancement du projet Find Your Scene : timeline, pourcentage de complétion, inspirations et accès à la maquette." />
+<style>
+  @font-face {
+    font-family: "system-fallback";
+    src: local("Arial");
+  }
+
+  :root {
+    --bg: #F6F2FA;
+    --bg-elevated: #FFFFFF;
+    --bg-sunken: #ECE2F6;
+    --text: #1B1526;
+    --text-muted: #6B6178;
+    --border: #E1D7EC;
+    --brand: #5B2A86;
+    --brand-soft: #EFE3FA;
+    --gold: #A8691A;
+    --coral: #C22A5F;
+    --teal: #147F72;
+    --shadow: rgba(91, 42, 134, 0.14);
+    --ring-track: #E1D7EC;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14101F;
+      --bg-elevated: #1E1830;
+      --bg-sunken: #0F0C18;
+      --text: #F3EEFA;
+      --text-muted: #A79BBE;
+      --border: #332A48;
+      --brand: #C09EEA;
+      --brand-soft: #2A2140;
+      --gold: #F0B057;
+      --coral: #F0577E;
+      --teal: #4FD6C4;
+      --shadow: rgba(0, 0, 0, 0.45);
+      --ring-track: #332A48;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14101F;
+    --bg-elevated: #1E1830;
+    --bg-sunken: #0F0C18;
+    --text: #F3EEFA;
+    --text-muted: #A79BBE;
+    --border: #332A48;
+    --brand: #C09EEA;
+    --brand-soft: #2A2140;
+    --gold: #F0B057;
+    --coral: #F0577E;
+    --teal: #4FD6C4;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --ring-track: #332A48;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--brand); text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2.5px solid var(--gold);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+
+  /* ---------- Header / marquee ---------- */
+  .marquee {
+    position: relative;
+    background: var(--brand);
+    color: #F8F3FF;
+    overflow: hidden;
+    padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3rem);
+  }
+  .marquee::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 140%;
+    background: radial-gradient(circle at 22% 15%, rgba(232, 179, 92, 0.55), transparent 42%),
+                radial-gradient(circle at 78% 0%, rgba(226, 62, 117, 0.35), transparent 40%);
+    pointer-events: none;
+  }
+  .marquee-eyebrow {
+    position: relative;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #E8C9FA;
+    margin: 0 0 0.9rem;
+  }
+  .marquee-title {
+    position: relative;
+    font-size: clamp(2.25rem, 5.5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.6rem;
+  }
+  .marquee-sub {
+    position: relative;
+    max-width: 54ch;
+    font-size: 1.05rem;
+    color: #E8DAF7;
+    margin: 0 0 2.25rem;
+  }
+  .marquee-meta {
+    position: relative;
+    font-size: 0.85rem;
+    color: #CBB3E4;
+  }
+
+  .stat-row {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    align-items: stretch;
+  }
+
+  .ring-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    padding: 1.1rem 1.5rem;
+    backdrop-filter: blur(2px);
+  }
+  .ring-card svg { display: block; }
+  .ring-num {
+    font-size: 1.7rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    fill: #FFFFFF;
+  }
+  .ring-label { display: flex; flex-direction: column; gap: 0.2rem; }
+  .ring-label .t1 { font-weight: 700; font-size: 0.95rem; }
+  .ring-label .t2 { font-size: 0.82rem; color: #D8C4EE; }
+
+  .phase-card {
+    flex: 1 1 260px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  .phase-card .t2 { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #D8C4EE; }
+  .phase-card .t1 { font-weight: 700; font-size: 1.05rem; }
+  .phase-card .t3 { font-size: 0.85rem; color: #E8DAF7; }
+
+  /* stacked allocation bar */
+  .alloc {
+    position: relative;
+    margin-top: 1.75rem;
+  }
+  .alloc-label {
+    font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #D8C4EE; margin: 0 0 0.5rem;
+  }
+  .alloc-bar {
+    display: flex; width: 100%; height: 10px; border-radius: 999px; overflow: hidden;
+    background: rgba(255,255,255,0.14);
+  }
+  .alloc-seg { height: 100%; }
+  .alloc-seg[data-status="done"] { background: var(--teal-solid, #3FD6C0); }
+  .alloc-seg[data-status="progress"] { background: var(--gold-solid, #F0B057); }
+  .alloc-seg[data-status="todo"] { background: rgba(255,255,255,0.18); }
+
+  /* ---------- Sections ---------- */
+  main { padding: clamp(2.5rem, 5vw, 3.5rem) 0 4rem; display: flex; flex-direction: column; gap: clamp(3rem, 6vw, 4rem); }
+
+  .section-head { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
+  .section-eyebrow { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--coral); }
+  .section-title { font-size: clamp(1.4rem, 3vw, 1.85rem); font-weight: 800; }
+  .section-desc { color: var(--text-muted); max-width: 68ch; font-size: 0.98rem; }
+
+  /* ---------- Timeline (Actes) ---------- */
+  .acts { display: flex; flex-direction: column; }
+  .act {
+    display: grid;
+    grid-template-columns: 3.75rem 1fr;
+    gap: 1rem;
+    position: relative;
+    padding-bottom: 1.9rem;
+  }
+  .act:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 1.85rem;
+    top: 3.2rem;
+    bottom: -0.3rem;
+    width: 0;
+    border-left: 2px dashed var(--border);
+  }
+  .act-badge {
+    display: flex; align-items: center; justify-content: center;
+    width: 3.75rem; height: 3.75rem;
+    border-radius: 50%;
+    font-weight: 800; font-size: 1.05rem;
+    border: 2px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .act[data-status="done"] .act-badge { border-color: var(--teal); color: var(--teal); background: color-mix(in srgb, var(--teal) 12%, var(--bg-elevated)); }
+  .act[data-status="progress"] .act-badge { border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--bg-elevated)); }
+
+  .act-body {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.15rem 1.3rem;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .act-top {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.6rem 1rem;
+    margin-bottom: 0.4rem;
+  }
+  .act-title { font-size: 1.08rem; font-weight: 700; }
+  .act-date { font-size: 0.82rem; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .act-desc { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 0.75rem; max-width: 64ch; }
+  .act-foot { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em;
+    padding: 0.28rem 0.65rem; border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .chip .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+  .chip[data-status="done"] { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, var(--border)); }
+  .chip[data-status="progress"] { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, var(--border)); }
+
+  .mini-bar { flex: 1 1 120px; max-width: 220px; height: 6px; border-radius: 999px; background: var(--bg-sunken); overflow: hidden; }
+  .mini-bar > span { display: block; height: 100%; border-radius: 999px; background: var(--brand); }
+  .act[data-status="done"] .mini-bar > span { background: var(--teal); }
+  .act[data-status="progress"] .mini-bar > span { background: var(--gold); }
+  .weight-note { font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  /* ---------- Card grid ---------- */
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.25rem; }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.6rem;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.9rem; }
+  .span-7 { grid-column: span 7; }
+  .span-5 { grid-column: span 5; }
+  .span-12 { grid-column: span 12; }
+  @media (max-width: 860px) {
+    .span-7, .span-5, .span-12 { grid-column: span 12; }
+    .act { grid-template-columns: 3rem 1fr; }
+    .act-badge { width: 3rem; height: 3rem; font-size: 0.9rem; }
+    .act:not(:last-child)::before { left: 1.5rem; top: 2.7rem; }
+  }
+
+  .bullets { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+  .bullets li { padding-left: 1.15rem; position: relative; font-size: 0.96rem; color: var(--text); }
+  .bullets li::before {
+    content: "";
+    position: absolute; left: 0; top: 0.55em;
+    width: 6px; height: 6px; border-radius: 1px;
+    background: var(--coral);
+    transform: rotate(45deg);
+  }
+  .bullets .muted { color: var(--text-muted); }
+
+  .tabs-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.1rem; }
+  .tab-pill {
+    font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem;
+    border-radius: 999px; background: var(--brand-soft); color: var(--brand);
+  }
+
+  .source-list { display: flex; flex-direction: column; }
+  .source {
+    display: grid; grid-template-columns: 1fr; gap: 0.25rem;
+    padding: 0.9rem 0; border-bottom: 1px dashed var(--border);
+  }
+  .source:last-child { border-bottom: none; padding-bottom: 0; }
+  .source:first-child { padding-top: 0; }
+  .source-name { font-weight: 700; font-size: 0.98rem; }
+  .source-name a { color: var(--text); }
+  .source-note { font-size: 0.9rem; color: var(--text-muted); }
+  .source-tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 0.15rem;
+  }
+
+  .repo-list { display: flex; flex-direction: column; gap: 1.1rem; }
+  .repo {
+    border: 1px solid var(--border); border-radius: 10px; padding: 0.95rem 1.1rem;
+    background: var(--bg-sunken);
+  }
+  .repo.featured { border-color: color-mix(in srgb, var(--gold) 55%, var(--border)); background: color-mix(in srgb, var(--gold) 8%, var(--bg-sunken)); }
+  .repo-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+  .repo-name { font-weight: 700; font-size: 0.98rem; }
+  .repo-name a { color: var(--text); }
+  .repo-star { font-size: 0.72rem; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; text-transform: uppercase; }
+  .repo-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.35rem 0 0.15rem; }
+  .repo-stack { font-size: 0.82rem; color: var(--text-muted); font-style: normal; }
+  .repo-stack b { color: var(--text); font-weight: 600; }
+
+  .mockup-card {
+    display: flex; flex-direction: column; gap: 0.9rem;
+    align-items: flex-start;
+  }
+  .mockup-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.2rem; border-radius: 10px;
+    background: var(--bg-sunken); color: var(--text-muted);
+    border: 1px dashed var(--border);
+    font-weight: 700; font-size: 0.92rem;
+    cursor: not-allowed;
+  }
+
+  .journal { display: flex; flex-direction: column; gap: 1.1rem; }
+  .journal-entry { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; }
+  .journal-date { font-size: 0.82rem; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .journal-text { font-size: 0.94rem; color: var(--text); }
+  @media (max-width: 500px) {
+    .journal-entry { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.75rem 0 2.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .act-body, .card { transition: box-shadow 0.15s ease; }
+  }
+</style>
+</head>
+<body>
+
+<header class="marquee">
+  <div class="wrap">
+    <p class="marquee-eyebrow">Tableau de bord du projet</p>
+    <h1 class="marquee-title">Find Your Scene</h1>
+    <p class="marquee-sub">Le journal et la communauté du spectacle vivant — théâtre, danse, cirque, magie, musique, battles, drag, cabaret. Suivi en direct de la construction de l'application, de l'idée à la maquette testable.</p>
+
+    <div class="stat-row">
+      <div class="ring-card">
+        <svg id="ring" width="86" height="86" viewBox="0 0 86 86" role="img" aria-label="Avancement global">
+          <circle cx="43" cy="43" r="37" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="9" />
+          <circle id="ring-fill" cx="43" cy="43" r="37" fill="none" stroke="#F0B057" stroke-width="9" stroke-linecap="round" transform="rotate(-90 43 43)" />
+          <text id="ring-text" class="ring-num" x="43" y="49" text-anchor="middle">0%</text>
+        </svg>
+        <div class="ring-label">
+          <span class="t1">Avancement global</span>
+          <span class="t2">Mis à jour à chaque étape franchie</span>
+        </div>
+      </div>
+      <div class="phase-card">
+        <span class="t2">Étape actuelle</span>
+        <span class="t1" id="current-phase-title">—</span>
+        <span class="t3" id="current-phase-note">—</span>
+      </div>
+      <div class="phase-card">
+        <span class="t2">Dernière mise à jour</span>
+        <span class="t1">7 août 2026</span>
+        <span class="t3">Cadrage terminé — planning en 7 actes posé</span>
+      </div>
+    </div>
+
+    <div class="alloc">
+      <p class="alloc-label">Répartition du projet, étape par étape</p>
+      <div class="alloc-bar" id="alloc-bar"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section aria-labelledby="timeline-title">
+    <div class="section-head">
+      <span class="section-eyebrow">Feuille de route</span>
+      <h2 class="section-title" id="timeline-title">Les actes du projet</h2>
+      <p class="section-desc">Chaque acte a un poids dans l'avancement global — les actes plus lourds (le développement, le design) comptent davantage que le cadrage. La barre sous chaque acte montre son propre avancement, pas celui du projet entier.</p>
+    </div>
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <section aria-labelledby="concept-title">
+    <div class="section-head">
+      <span class="section-eyebrow">Le projet</span>
+      <h2 class="section-title" id="concept-title">De quoi s'agit-il</h2>
+    </div>
+    <div class="grid">
+      <div class="card span-7">
+        <h3>Le concept, en un coup d'œil</h3>
+        <ul class="bullets">
+          <li>Un mix entre <strong>Letterboxd/Babelio et un journal personnel</strong>, mais pour le spectacle vivant plutôt que les films ou les livres.</li>
+          <li>Suivre, noter et commenter les spectacles vus : théâtre, danse contemporaine, ballet classique, cirque (contemporain et traditionnel), magie, comédie musicale, battles (all style, électro), spectacle jeune public...</li>
+          <li>Des pages par catégorie et par compagnie, avec tournée, dates et réservation directe ; chaque compagnie a ses pages artistes.</li>
+          <li>Des objectifs personnels ("voir X spectacles de tel genre"), un bilan mensuel et annuel de ses sorties.</li>
+          <li>Une dimension communautaire : profils identifiables, amis, recommandations selon les préférences et la localisation.</li>
+          <li>Réductions et jeux-concours accessibles depuis l'application, wallet pour les billets, agenda centralisé.</li>
+          <li>Une modération stricte et transparente contre le harcèlement.</li>
+          <li class="muted">Lancement pensé pour la France d'abord, avec une extension progressive — la communauté spectacle est mobile.</li>
+        </ul>
+        <div class="tabs-row">
+          <span class="tab-pill">Accueil</span>
+          <span class="tab-pill">Mes spectacles</span>
+          <span class="tab-pill">Chercher</span>
+          <span class="tab-pill">Profil</span>
+          <span class="tab-pill">Agenda</span>
+        </div>
+      </div>
+      <div class="card span-5">
+        <h3>Ton & accessibilité</h3>
+        <ul class="bullets">
+          <li>Une identité <strong>colorée et joyeuse</strong> à consulter, loin d'un site institutionnel.</li>
+          <li>Une typographie claire, pensée aussi pour les personnes dyslexiques : pas d'italique en texte courant, un interlignage large, un alignement à gauche.</li>
+          <li>L'objectif affiché : simplifier l'accès à la connaissance des spectacles vivants.</li>
+        </ul>
+        <p class="source-note" style="margin-top:1rem;">
+          Source : <a href="https://spiffy-catsup-fd5.notion.site/Find-Your-Scene-3b4e034dfd4c80a99895e927b90ba8c8" target="_blank" rel="noopener">page Notion « Find Your Scene »</a>, résumée ici pour le suivi.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="inspi-title">
+    <div class="section-head">
+      <span class="section-eyebrow">Étude de terrain</span>
+      <h2 class="section-title" id="inspi-title">Ce qui existe déjà</h2>
+      <p class="section-desc">Deux pistes de recherche en parallèle : les applications proches repérées par vous deux, et les dépôts open-source trouvés sur GitHub qui touchent au même sujet.</p>
+    </div>
+    <div class="grid">
+      <div class="card span-5">
+        <h3>Applications proches</h3>
+        <div class="source-list">
+          <div class="source">
+            <span class="source-tag">Partagé par une amie</span>
+            <span class="source-name">Dixit — OnParticipe</span>
+            <span class="source-note">« L'app de recos culturelles qui vous ressemble ». Teaser de projet, positionnée sur les recommandations plutôt que sur le suivi personnel des spectacles vus.</span>
+          </div>
+          <div class="source">
+            <span class="source-tag">Repéré en parallèle</span>
+            <span class="source-name"><a href="https://www.onparticipe.fr/c/peTn4rrL" target="_blank" rel="noopener">Projet similaire — OnParticipe</a></span>
+            <span class="source-note">Même idée générale, mais centrée sur la réservation et les recommandations plutôt que sur « avoir sa liste et ses envies » — c'est là que Find Your Scene se distingue.</span>
+          </div>
+          <div class="source">
+            <span class="source-tag">Référence internationale</span>
+            <span class="source-name"><a href="https://www.theaterdiary.com/press/" target="_blank" rel="noopener">Mezzanine — Theater Diary</a></span>
+            <span class="source-note">Le « Letterboxd du théâtre », iOS uniquement, +1500 productions Broadway/West End. Pas de spectacle vivant élargi (danse, cirque, magie), pas francophone.</span>
+          </div>
+          <div class="source">
+            <span class="source-tag">Référence internationale</span>
+            <span class="source-name"><a href="https://apps.apple.com/gb/app/theatregoer-theatre-tracker/id1540656306" target="_blank" rel="noopener">Theatregoer — Theatre Tracker</a></span>
+            <span class="source-note">Suivi des spectacles vus/à venir, billets récupérés par e-mail, widgets. Là aussi centré théâtre, sans volet communauté élargie.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span-7">
+        <h3>Dépôts GitHub explorés</h3>
+        <div class="repo-list">
+          <div class="repo featured">
+            <div class="repo-top">
+              <span class="repo-name"><a href="https://github.com/todam-app/todam" target="_blank" rel="noopener">todam-app/todam</a></span>
+              <span class="repo-star">Le plus proche</span>
+            </div>
+            <p class="repo-desc">« Todam, mon journal de spectacles » — projet français open-source pour découvrir, enregistrer et noter le théâtre, l'opéra et le ballet. Catalogue communautaire, journal filtrable, avis, listes partageables, fiches lieux/compagnies vérifiables. MVP déjà testé à Avignon et Monaco.</p>
+            <p class="repo-stack"><b>Stack :</b> monorepo Expo (Web, iOS, Android) + API Fastify + PostgreSQL/Drizzle + contrats Zod partagés · licences Apache-2.0 (client) / AGPL-3.0 (serveur).</p>
+            <p class="repo-stack" style="margin-top:0.4rem;">À regarder de près comme référence d'architecture — c'est, à ce jour, le projet qui va le plus loin dans la même direction.</p>
+          </div>
+          <div class="repo">
+            <div class="repo-top">
+              <span class="repo-name"><a href="https://github.com/jameslittle230/thtr" target="_blank" rel="noopener">jameslittle230/thtr</a></span>
+            </div>
+            <p class="repo-desc">« THTR: Theater Diary » — app iOS pour suivre et noter des spectacles de théâtre, projet étudiant (Bowdoin College). Développement arrêté, mais l'organisation des fiches spectacle reste une bonne référence UX.</p>
+          </div>
+          <div class="repo">
+            <div class="repo-top">
+              <span class="repo-name"><a href="https://github.com/janaiscoding/letterboxd-clone" target="_blank" rel="noopener">janaiscoding/letterboxd-clone</a></span>
+            </div>
+            <p class="repo-desc">Clone de Letterboxd en React/Firebase : bons patterns réutilisables pour les notes, le « vu / à voir » et les favoris, à transposer aux spectacles.</p>
+          </div>
+          <div class="repo">
+            <div class="repo-top">
+              <span class="repo-name"><a href="https://github.com/StageOps-EIP/StageOps" target="_blank" rel="noopener">StageOps-EIP/StageOps</a></span>
+            </div>
+            <p class="repo-desc">Plateforme de gestion technique pour régisseurs de spectacle vivant. Public différent (équipes techniques, pas spectateurs), mais confirme un écosystème actif autour du spectacle vivant côté dev français.</p>
+          </div>
+        </div>
+        <p class="repo-stack" style="margin-top:1rem;">Recherche faite via l'API GitHub sur les dépôts publics. Aucun projet ne couvre exactement l'ambition complète de Find Your Scene (catégories très larges + communauté + wallet billets) — todam-app/todam est la référence la plus utile pour la suite.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mockup-title">
+    <div class="section-head">
+      <span class="section-eyebrow">À tester</span>
+      <h2 class="section-title" id="mockup-title">La maquette</h2>
+    </div>
+    <div class="card mockup-card span-12" style="display:flex;">
+      <p style="margin:0; color:var(--text-muted); max-width:64ch;">Dès que le prototype interactif (maquette Figma) sera prêt, le lien de test apparaîtra ici — et seulement ici. Ce sera le point d'entrée unique pour l'essayer, pas besoin de le chercher ailleurs.</p>
+      <span class="mockup-btn" aria-disabled="true">Maquette à venir</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="journal-title">
+    <div class="section-head">
+      <span class="section-eyebrow">Suivi</span>
+      <h2 class="section-title" id="journal-title">Journal de bord</h2>
+    </div>
+    <div class="card span-12">
+      <div class="journal" id="journal"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Ce tableau de bord vit avec le projet : il est mis à jour à chaque avancée, pour que tout reste centralisé à un seul endroit.
+</footer>
+
+<script>
+  // ---- Données du projet : à éditer au fil de l'avancée ----
+  var phases = [
+    {
+      roman: "I",
+      title: "Cadrage & recherche",
+      desc: "Synthèse du concept, étude des applications proches (Dixit, Mezzanine, Theatregoer...) et des dépôts open-source utiles sur GitHub.",
+      status: "done",
+      percent: 100,
+      weight: 10,
+      date: "7 août 2026"
+    },
+    {
+      roman: "II",
+      title: "Spécifications fonctionnelles",
+      desc: "Détail des parcours (fiche spectacle, fiche compagnie, journal, objectifs), du modèle de données et des catégories.",
+      status: "todo",
+      percent: 0,
+      weight: 15,
+      date: "cible fin août 2026"
+    },
+    {
+      roman: "III",
+      title: "Design UX/UI & identité visuelle",
+      desc: "Palette colorée et accessible, typographie claire, wireframes des écrans clés (Accueil, Mes spectacles, Chercher, Profil, Agenda).",
+      status: "todo",
+      percent: 0,
+      weight: 20,
+      date: "cible septembre 2026"
+    },
+    {
+      roman: "IV",
+      title: "Maquette interactive",
+      desc: "Prototype cliquable et testable — le lien apparaîtra dans la section « À tester » ci-dessus.",
+      status: "todo",
+      percent: 0,
+      weight: 15,
+      date: "cible octobre 2026"
+    },
+    {
+      roman: "V",
+      title: "Développement du MVP",
+      desc: "Construction de l'application : fiches spectacle, journal personnel, recherche, profils, réservation.",
+      status: "todo",
+      percent: 0,
+      weight: 25,
+      date: "cible nov. 2026 – janv. 2027"
+    },
+    {
+      roman: "VI",
+      title: "Beta test",
+      desc: "Test fermé avec un premier groupe en France, retours et ajustements.",
+      status: "todo",
+      percent: 0,
+      weight: 10,
+      date: "cible fév. – mars 2027"
+    },
+    {
+      roman: "VII",
+      title: "Lancement public",
+      desc: "Ouverture de l'application au public, en commençant par la France.",
+      status: "todo",
+      percent: 0,
+      weight: 5,
+      date: "cible printemps 2027"
+    }
+  ];
+
+  var journalEntries = [
+    {
+      date: "7 août 2026",
+      text: "Mise en place de ce tableau de bord. Synthèse du concept à partir de la page Notion, recherche des applications proches (Dixit/OnParticipe, Mezzanine, Theatregoer) et des dépôts GitHub utiles (todam-app/todam en particulier). Planning posé en 7 actes."
+    }
+  ];
+
+  // ---- Rendu ----
+  function statusLabel(s) {
+    return s === "done" ? "Terminé" : s === "progress" ? "En cours" : "À venir";
+  }
+
+  var totalWeight = phases.reduce(function (sum, p) { return sum + p.weight; }, 0);
+  var overall = Math.round(
+    phases.reduce(function (sum, p) { return sum + (p.weight * p.percent) / 100; }, 0) / totalWeight * 100
+  );
+
+  var ringFill = document.getElementById("ring-fill");
+  var circumference = 2 * Math.PI * 37;
+  ringFill.style.strokeDasharray = circumference.toFixed(2);
+  ringFill.style.strokeDashoffset = (circumference * (1 - overall / 100)).toFixed(2);
+  document.getElementById("ring-text").textContent = overall + "%";
+
+  var current = phases.find(function (p) { return p.status !== "done"; }) || phases[phases.length - 1];
+  document.getElementById("current-phase-title").textContent = "Acte " + current.roman + " — " + current.title;
+  document.getElementById("current-phase-note").textContent = current.date;
+
+  var allocBar = document.getElementById("alloc-bar");
+  phases.forEach(function (p) {
+    var seg = document.createElement("div");
+    seg.className = "alloc-seg";
+    seg.dataset.status = p.status;
+    seg.style.width = (p.weight / totalWeight * 100) + "%";
+    seg.title = "Acte " + p.roman + " — " + p.title + " (" + p.weight + "%)";
+    allocBar.appendChild(seg);
+  });
+
+  var actsEl = document.getElementById("acts");
+  phases.forEach(function (p) {
+    var act = document.createElement("div");
+    act.className = "act";
+    act.dataset.status = p.status;
+    act.innerHTML =
+      '<div class="act-badge">' + p.roman + '</div>' +
+      '<div class="act-body">' +
+        '<div class="act-top">' +
+          '<span class="act-title">Acte ' + p.roman + ' — ' + p.title + '</span>' +
+          '<span class="act-date">' + p.date + '</span>' +
+        '</div>' +
+        '<p class="act-desc">' + p.desc + '</p>' +
+        '<div class="act-foot">' +
+          '<span class="chip" data-status="' + p.status + '"><span class="dot"></span>' + statusLabel(p.status) + '</span>' +
+          '<div class="mini-bar"><span style="width:' + p.percent + '%"></span></div>' +
+          '<span class="weight-note">' + p.percent + '% de cet acte · pèse ' + p.weight + '% du projet</span>' +
+        '</div>' +
+      '</div>';
+    actsEl.appendChild(act);
+  });
+
+  var journalEl = document.getElementById("journal");
+  journalEntries.forEach(function (e) {
+    var entry = document.createElement("div");
+    entry.className = "journal-entry";
+    entry.innerHTML =
+      '<span class="journal-date">' + e.date + '</span>' +
+      '<span class="journal-text">' + e.text + '</span>';
+    journalEl.appendChild(entry);
+  });
+</script>
+</body>
+</html>
