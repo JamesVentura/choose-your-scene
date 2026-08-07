@@ -636,7 +636,7 @@
       status: "todo",
       percent: 0,
       weight: 25,
-      date: "cible nov. 2026 – janv. 2027"
+      date: ""
     },
     {
       roman: "VI",
@@ -645,7 +645,7 @@
       status: "todo",
       percent: 0,
       weight: 10,
-      date: "cible fév. – mars 2027"
+      date: ""
     },
     {
       roman: "VII",
@@ -654,7 +654,7 @@
       status: "todo",
       percent: 0,
       weight: 5,
-      date: "à définir selon les retours du test"
+      date: ""
     }
   ];
 
@@ -699,7 +699,7 @@
 
   var current = phases.find(function (p) { return p.status !== "done"; }) || phases[phases.length - 1];
   document.getElementById("current-phase-title").textContent = "Acte " + current.roman + " — " + current.title;
-  document.getElementById("current-phase-note").textContent = current.date;
+  document.getElementById("current-phase-note").textContent = current.date || "Pas de date cible fixée";
 
   var allocBar = document.getElementById("alloc-bar");
   phases.forEach(function (p) {
@@ -721,7 +721,7 @@
       '<div class="act-body">' +
         '<div class="act-top">' +
           '<span class="act-title">Acte ' + p.roman + ' — ' + p.title + '</span>' +
-          '<span class="act-date">' + p.date + '</span>' +
+          (p.date ? '<span class="act-date">' + p.date + '</span>' : "") +
         '</div>' +
         '<p class="act-desc">' + p.desc + '</p>' +
         '<div class="act-foot">' +
