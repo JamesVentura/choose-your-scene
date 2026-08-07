@@ -2,11 +2,15 @@
 
 Ce dépôt héberge le **tableau de bord de suivi** du projet *Find Your Scene* : une future application façon Letterboxd/Babelio, mais pour le spectacle vivant (théâtre, danse, cirque, magie, musique, battles, drag, cabaret...).
 
-Le concept complet vient de la page Notion **[Find Your Scene](https://spiffy-catsup-fd5.notion.site/Find-Your-Scene-3b4e034dfd4c80a99895e927b90ba8c8)**. Ce dépôt ne construit pas encore l'application elle-même : il centralise, pour la porteuse du projet, l'avancée de sa concrétisation — timeline, pourcentage de complétion, inspirations, dépôts open-source utiles, et bientôt l'accès à la maquette testable.
+Le concept complet vient de la page Notion **[Find Your Scene](https://spiffy-catsup-fd5.notion.site/Find-Your-Scene-3b4e034dfd4c80a99895e927b90ba8c8)**. Portée actuelle du projet : un test avec l'entourage proche de la porteuse du projet (moins de dix personnes), pas un lancement public — voir `docs/02-specifications-fonctionnelles.md` pour le détail.
+
+Ce dépôt centralise, pour la porteuse du projet, l'avancée de sa concrétisation — timeline, pourcentage de complétion, inspirations, dépôts open-source utiles, et l'accès à la maquette testable.
 
 ## Consulter le tableau de bord
 
-Ouvrir `index.html` (aucune dépendance, aucun build — un seul fichier autonome). Une fois ce dépôt fusionné sur `main` avec GitHub Pages activé (Settings → Pages → branche `main`, dossier `/`), le tableau de bord sera accessible en ligne à une URL du type `https://<utilisateur>.github.io/choose-your-scene/`.
+Le dépôt est public avec GitHub Pages activé sur cette branche : **[jamesventura.github.io/choose-your-scene](https://jamesventura.github.io/choose-your-scene/)**. En local, ouvrir `index.html` suffit aussi (aucune dépendance, aucun build — un seul fichier autonome).
+
+La maquette interactive vit dans `maquette/index.html`, servie par Pages à `/choose-your-scene/maquette/` — le dashboard y renvoie depuis l'en-tête et depuis la section « À tester ».
 
 ## Mettre à jour l'avancement
 
@@ -21,4 +25,5 @@ Le détail complet est dans le tableau de bord lui-même (sections « Ce qui exi
 
 ## Documents
 
-- [`docs/02-specifications-fonctionnelles.md`](docs/02-specifications-fonctionnelles.md) — spécifications fonctionnelles (Acte II) : parcours par onglet, modèle de données, catégories, périmètre du MVP, questions ouvertes en attente de validation.
+- [`docs/02-specifications-fonctionnelles.md`](docs/02-specifications-fonctionnelles.md) — spécifications fonctionnelles (Acte II), validées : parcours par onglet, modèle de données, catégories, périmètre de la version testable.
+- [`maquette/index.html`](maquette/index.html) — prototype cliquable (Actes III & IV) : 5 écrans, fiche spectacle, contenu d'exemple dans les 14 catégories. État de démonstration, rien n'est persisté après rechargement.

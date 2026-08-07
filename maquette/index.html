@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Find Your Scene — Maquette</title>
+<meta name="description" content="Maquette interactive de Find Your Scene : premier jet cliquable, contenu d'exemple." />
+<style>
+  :root {
+    --page-bg: #F6F2FA;
+    --page-text: #6B6178;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page-bg: #14101F; --page-text: #A79BBE; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --page-bg: #14101F; --page-text: #A79BBE; color-scheme: dark; }
+
+  /* App palette — deliberately fixed, this is the product being presented,
+     not the viewer chrome around it. Shared family with the dashboard. */
+  :root {
+    --app-bg: #FBF7FE;
+    --app-surface: #FFFFFF;
+    --app-ink: #201A2E;
+    --app-muted: #6E6480;
+    --app-border: #E7DEF2;
+    --brand: #5B2A86;   /* théâtre */
+    --gold:  #A8691A;   /* danse, cirque, magie */
+    --teal:  #147F72;   /* musique, battles, drag, cabaret */
+    --coral: #C22A5F;   /* comédie musicale, jeune public */
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--page-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .stage {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2.5rem 1rem;
+  }
+  .stage-note {
+    max-width: 390px;
+    text-align: center;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--page-text);
+    padding: 0 0.5rem;
+  }
+  .stage-note strong { color: var(--brand); }
+
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    height: 820px;
+    max-height: 88vh;
+    background: #16121F;
+    border-radius: 46px;
+    padding: 12px;
+    box-shadow: 0 30px 60px rgba(20, 10, 40, 0.35), 0 2px 8px rgba(20, 10, 40, 0.2);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .notch {
+    position: absolute;
+    top: 12px; left: 50%; transform: translateX(-50%);
+    width: 90px; height: 22px;
+    background: #16121F;
+    border-radius: 0 0 14px 14px;
+    z-index: 5;
+  }
+  .screen {
+    position: relative;
+    width: 100%; height: 100%;
+    background: var(--app-bg);
+    color: var(--app-ink);
+    border-radius: 34px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 520px) {
+    .stage { padding: 0; gap: 0; }
+    .stage-note { display: none; }
+    .phone { width: 100%; height: 100dvh; max-height: none; border-radius: 0; padding: 0; box-shadow: none; }
+    .notch { display: none; }
+    .screen { border-radius: 0; }
+  }
+
+  /* ---- top bar ---- */
+  .app-topbar {
+    flex-shrink: 0;
+    padding: 1.6rem 1.25rem 0.9rem;
+    display: flex; align-items: baseline; justify-content: space-between;
+    background: var(--app-bg);
+  }
+  .app-topbar h1 { margin: 0; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.01em; }
+  .app-topbar .wordmark { color: var(--brand); font-weight: 800; font-size: 1.05rem; }
+
+  /* ---- content ---- */
+  .app-content { flex: 1; overflow-y: auto; padding: 0 1.25rem 1.25rem; -webkit-overflow-scrolling: touch; }
+  .screen-panel { display: none; }
+  .screen-panel.active { display: block; }
+
+  h2.block-title { font-size: 0.98rem; font-weight: 800; margin: 1.3rem 0 0.7rem; }
+  h2.block-title:first-child { margin-top: 0.2rem; }
+  p.block-sub { font-size: 0.85rem; color: var(--app-muted); margin: -0.4rem 0 0.9rem; line-height: 1.5; }
+
+  /* ---- search ---- */
+  .search-box {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--app-surface); border: 1px solid var(--app-border);
+    border-radius: 12px; padding: 0.65rem 0.9rem; margin-bottom: 1rem;
+  }
+  .search-box input {
+    border: none; outline: none; background: none; flex: 1;
+    font-size: 0.95rem; font-family: inherit; color: var(--app-ink);
+  }
+  .search-box input::placeholder { color: var(--app-muted); }
+  .search-box svg { flex-shrink: 0; color: var(--app-muted); }
+
+  /* ---- category grid ---- */
+  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; margin-bottom: 1.4rem; }
+  .cat-tile {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid var(--app-border); border-radius: 12px;
+    padding: 0.7rem 0.8rem; font-size: 0.85rem; font-weight: 700;
+    background: var(--app-surface); cursor: pointer; color: var(--app-ink);
+  }
+  .cat-tile[data-active="true"] { border-color: currentColor; background: color-mix(in srgb, currentColor 10%, var(--app-surface)); }
+  .cat-tile[data-fam="theatre"] { color: var(--brand); }
+  .cat-tile[data-fam="danse"] { color: var(--gold); }
+  .cat-tile[data-fam="musique"] { color: var(--teal); }
+  .cat-tile[data-fam="jeune"] { color: var(--coral); }
+
+  .chip {
+    display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700;
+    padding: 0.22rem 0.55rem; border-radius: 999px;
+  }
+  .chip[data-fam="theatre"] { color: var(--brand); background: color-mix(in srgb, var(--brand) 12%, white); }
+  .chip[data-fam="danse"] { color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, white); }
+  .chip[data-fam="musique"] { color: var(--teal); background: color-mix(in srgb, var(--teal) 12%, white); }
+  .chip[data-fam="jeune"] { color: var(--coral); background: color-mix(in srgb, var(--coral) 12%, white); }
+
+  /* ---- rails / cards ---- */
+  .rail { display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.4rem; margin: 0 -1.25rem 0.4rem; padding-left: 1.25rem; padding-right: 1.25rem; }
+  .rail::-webkit-scrollbar { display: none; }
+  .show-card { flex-shrink: 0; width: 128px; cursor: pointer; }
+  .show-card .poster { width: 128px; height: 168px; }
+  .show-card .title { font-size: 0.82rem; font-weight: 700; margin-top: 0.45rem; line-height: 1.3; }
+  .show-card .meta { font-size: 0.74rem; color: var(--app-muted); margin-top: 0.15rem; }
+
+  .poster {
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.9rem; color: #fff; flex-shrink: 0;
+  }
+  .poster[data-fam="theatre"] { background: linear-gradient(150deg, var(--brand), color-mix(in srgb, var(--brand) 55%, black)); }
+  .poster[data-fam="danse"] { background: linear-gradient(150deg, var(--gold), color-mix(in srgb, var(--gold) 55%, black)); }
+  .poster[data-fam="musique"] { background: linear-gradient(150deg, var(--teal), color-mix(in srgb, var(--teal) 55%, black)); }
+  .poster[data-fam="jeune"] { background: linear-gradient(150deg, var(--coral), color-mix(in srgb, var(--coral) 55%, black)); }
+
+  .list-row {
+    display: flex; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--app-border);
+    cursor: pointer; align-items: center;
+  }
+  .list-row:last-child { border-bottom: none; }
+  .list-row .poster { width: 52px; height: 68px; font-size: 1.1rem; border-radius: 9px; }
+  .list-row .info { flex: 1; min-width: 0; }
+  .list-row .title { font-size: 0.92rem; font-weight: 700; }
+  .list-row .sub { font-size: 0.78rem; color: var(--app-muted); margin-top: 0.15rem; }
+  .list-row .side { flex-shrink: 0; text-align: right; }
+
+  .stars { display: inline-flex; gap: 1px; font-size: 0.85rem; letter-spacing: 1px; color: var(--gold); white-space: nowrap; }
+  .stars .empty { color: var(--app-border); }
+  .rating-num { font-size: 0.78rem; color: var(--app-muted); margin-left: 0.3rem; font-variant-numeric: tabular-nums; }
+
+  /* ---- feed (accueil) ---- */
+  .feed-row { display: flex; gap: 0.7rem; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--app-border); cursor: pointer; }
+  .feed-row:last-child { border-bottom: none; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    background: color-mix(in srgb, var(--brand) 18%, white); color: var(--brand);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;
+  }
+  .feed-row .txt { font-size: 0.86rem; line-height: 1.4; }
+  .feed-row .txt b { font-weight: 700; }
+  .feed-row .txt .when { color: var(--app-muted); font-size: 0.76rem; }
+
+  /* ---- sub tabs (mes spectacles) ---- */
+  .subtabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
+  .subtab-btn {
+    flex: 1; padding: 0.55rem; border-radius: 10px; border: 1px solid var(--app-border);
+    background: var(--app-surface); font-size: 0.85rem; font-weight: 700; color: var(--app-muted);
+    cursor: pointer; font-family: inherit;
+  }
+  .subtab-btn[data-active="true"] { color: #fff; background: var(--brand); border-color: var(--brand); }
+
+  .stat-strip { display: flex; gap: 0.6rem; margin-bottom: 1.1rem; }
+  .stat-box { flex: 1; background: var(--app-surface); border: 1px solid var(--app-border); border-radius: 12px; padding: 0.7rem 0.6rem; text-align: center; }
+  .stat-box .n { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--brand); }
+  .stat-box .l { font-size: 0.68rem; color: var(--app-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.15rem; }
+
+  .goal-bar { height: 8px; border-radius: 999px; background: var(--app-border); overflow: hidden; margin-top: 0.4rem; }
+  .goal-bar > span { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
+
+  .empty-hint { font-size: 0.85rem; color: var(--app-muted); padding: 1rem 0; text-align: center; }
+
+  /* ---- profil ---- */
+  .profile-head { display: flex; align-items: center; gap: 0.9rem; margin: 0.2rem 0 1.2rem; }
+  .profile-head .avatar { width: 62px; height: 62px; font-size: 1.4rem; }
+  .profile-head .name { font-size: 1.15rem; font-weight: 800; }
+  .profile-head .bio { font-size: 0.82rem; color: var(--app-muted); }
+  .friends-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .friend-pill { display: flex; align-items: center; gap: 0.4rem; border: 1px solid var(--app-border); border-radius: 999px; padding: 0.3rem 0.7rem 0.3rem 0.3rem; font-size: 0.78rem; font-weight: 600; }
+  .friend-pill .avatar { width: 22px; height: 22px; font-size: 0.65rem; }
+
+  /* ---- agenda ---- */
+  .agenda-month { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--app-muted); margin: 1.2rem 0 0.5rem; }
+  .agenda-month:first-child { margin-top: 0.2rem; }
+  .agenda-row { display: flex; gap: 0.8rem; padding: 0.6rem 0; border-bottom: 1px solid var(--app-border); cursor: pointer; }
+  .agenda-date { width: 44px; flex-shrink: 0; text-align: center; }
+  .agenda-date .d { font-size: 1.15rem; font-weight: 800; color: var(--brand); line-height: 1; }
+  .agenda-date .m { font-size: 0.65rem; color: var(--app-muted); text-transform: uppercase; font-weight: 700; }
+  .agenda-row .info { flex: 1; }
+  .agenda-row .title { font-size: 0.9rem; font-weight: 700; }
+  .agenda-row .sub { font-size: 0.78rem; color: var(--app-muted); }
+
+  /* ---- tab bar ---- */
+  .tabbar {
+    flex-shrink: 0; display: flex;
+    height: 62px;
+    border-top: 1px solid var(--app-border);
+    background: var(--app-surface);
+    padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    position: relative; z-index: 12;
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+    background: none; border: none; font-family: inherit; cursor: pointer;
+    color: var(--app-muted); font-size: 0.66rem; font-weight: 700; padding: 0.3rem 0;
+  }
+  .tab-btn svg { width: 22px; height: 22px; }
+  .tab-btn[data-active="true"] { color: var(--brand); }
+
+  /* ---- detail overlay ---- */
+  .detail-overlay {
+    position: absolute; top: 0; left: 0; right: 0;
+    bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+    background: var(--app-bg);
+    transform: translateY(100%); transition: transform 0.28s ease;
+    display: flex; flex-direction: column; z-index: 10; border-radius: 34px 34px 0 0; overflow: hidden;
+  }
+  .detail-overlay.open { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .detail-overlay { transition: none; } }
+
+  .detail-hero { flex-shrink: 0; height: 200px; display: flex; align-items: flex-end; padding: 1rem; position: relative; }
+  .detail-hero .back-btn {
+    position: absolute; top: 1rem; left: 1rem;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(0,0,0,0.35); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .detail-hero .hero-title { position: relative; color: #fff; font-size: 1.35rem; font-weight: 800; text-wrap: balance; }
+  .detail-body { flex: 1; overflow-y: auto; padding: 1.1rem 1.25rem 1.5rem; }
+  .detail-company { font-size: 0.86rem; color: var(--app-muted); margin: 0.1rem 0 0.7rem; }
+  .detail-meta-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; font-size: 0.85rem; flex-wrap: wrap; }
+  .detail-syn { font-size: 0.92rem; line-height: 1.6; color: var(--app-ink); margin-bottom: 1.3rem; }
+  .detail-dates { margin-bottom: 1.3rem; }
+  .detail-dates .row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.4rem 0; border-bottom: 1px dashed var(--app-border); }
+  .detail-actions { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+  .btn {
+    font-family: inherit; font-weight: 700; font-size: 0.86rem; border-radius: 10px;
+    padding: 0.7rem 1rem; border: 1px solid var(--app-border); background: var(--app-surface);
+    color: var(--app-ink); cursor: pointer; flex: 1; text-align: center;
+  }
+  .btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn[data-on="true"] { background: color-mix(in srgb, var(--teal) 14%, white); border-color: var(--teal); color: var(--teal); }
+
+  .rate-picker { display: none; border: 1px solid var(--app-border); border-radius: 12px; padding: 0.9rem; margin-bottom: 1rem; background: var(--app-surface); }
+  .rate-picker.open { display: block; }
+  .rate-picker p { margin: 0 0 0.6rem; font-size: 0.85rem; font-weight: 700; }
+  .rate-stars { font-size: 1.6rem; letter-spacing: 4px; color: var(--app-border); }
+  .rate-stars span { cursor: pointer; }
+  .rate-stars span.filled { color: var(--gold); }
+  .rate-picker .confirm { margin-top: 0.7rem; }
+
+  .toast {
+    position: absolute; left: 50%; bottom: 90px; transform: translate(-50%, 10px);
+    background: var(--app-ink); color: #fff; font-size: 0.82rem; font-weight: 600;
+    padding: 0.6rem 1rem; border-radius: 999px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease; z-index: 20; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <header class="app-topbar" id="topbar">
+        <h1><span class="wordmark">Find Your Scene</span></h1>
+      </header>
+
+      <main class="app-content">
+
+        <section class="screen-panel" data-screen="accueil">
+          <p class="block-sub">Ton fil, aujourd'hui.</p>
+
+          <h2 class="block-title">Chez tes ami·es</h2>
+          <div id="feed-list"></div>
+
+          <h2 class="block-title">Recommandé pour toi</h2>
+          <div class="rail" id="reco-rail"></div>
+        </section>
+
+        <section class="screen-panel" data-screen="chercher">
+          <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Un titre, une compagnie..." />
+          </div>
+          <h2 class="block-title" style="margin-top:0;">Catégories</h2>
+          <div class="cat-grid" id="cat-grid"></div>
+          <h2 class="block-title" id="results-title">Tous les spectacles</h2>
+          <div id="search-results"></div>
+        </section>
+
+        <section class="screen-panel" data-screen="mes-spectacles">
+          <div class="stat-strip">
+            <div class="stat-box"><div class="n" id="stat-vus">0</div><div class="l">Vus en 2026</div></div>
+            <div class="stat-box"><div class="n" id="stat-moy">—</div><div class="l">Note moyenne</div></div>
+            <div class="stat-box"><div class="n" id="stat-envies">0</div><div class="l">Envies</div></div>
+          </div>
+          <div style="margin-bottom:1.2rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; margin-bottom:0.3rem;">
+              <span>Objectif 2026</span><span id="goal-label" style="color:var(--app-muted); font-weight:600;"></span>
+            </div>
+            <div class="goal-bar"><span id="goal-fill" style="width:0%;"></span></div>
+          </div>
+          <div class="subtabs">
+            <button class="subtab-btn" data-jtab="vus" data-active="true">Vus</button>
+            <button class="subtab-btn" data-jtab="envies">Envies</button>
+          </div>
+          <div id="journal-vus"></div>
+          <div id="journal-envies" style="display:none;"></div>
+        </section>
+
+        <section class="screen-panel" data-screen="profil">
+          <div class="profile-head">
+            <div class="avatar">E</div>
+            <div>
+              <div class="name">Emmanuelle</div>
+              <div class="bio">Amatrice de spectacle vivant</div>
+            </div>
+          </div>
+          <div class="stat-strip">
+            <div class="stat-box"><div class="n" id="p-stat-vus">0</div><div class="l">Vus</div></div>
+            <div class="stat-box"><div class="n" id="p-stat-moy">—</div><div class="l">Note moy.</div></div>
+            <div class="stat-box"><div class="n">2</div><div class="l">Suivi·es</div></div>
+          </div>
+          <h2 class="block-title">Catégories favorites</h2>
+          <div id="fav-cats" style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.1rem;"></div>
+          <h2 class="block-title">Suivi·es</h2>
+          <div class="friends-row">
+            <span class="friend-pill"><span class="avatar">C</span>Camille</span>
+            <span class="friend-pill"><span class="avatar">L</span>Léo</span>
+          </div>
+        </section>
+
+        <section class="screen-panel" data-screen="agenda">
+          <p class="block-sub">Les dates liées à tes envies. Les billets ajoutés depuis le wallet apparaîtront ici aussi (à venir).</p>
+          <div id="agenda-list"></div>
+        </section>
+
+      </main>
+
+      <nav class="tabbar" id="tabbar">
+        <button class="tab-btn" data-screen="accueil" data-active="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+          Accueil
+        </button>
+        <button class="tab-btn" data-screen="chercher">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Chercher
+        </button>
+        <button class="tab-btn" data-screen="mes-spectacles">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>
+          Mes spectacles
+        </button>
+        <button class="tab-btn" data-screen="profil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+          Profil
+        </button>
+        <button class="tab-btn" data-screen="agenda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+          Agenda
+        </button>
+      </nav>
+
+      <div class="detail-overlay" id="detail">
+        <div class="detail-hero" id="detail-hero">
+          <button class="back-btn" id="detail-back" aria-label="Retour">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="hero-title" id="detail-title"></div>
+        </div>
+        <div class="detail-body" id="detail-body"></div>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <p class="stage-note">Maquette de démonstration — <strong>7 août 2026</strong>. Les spectacles, avis et amis sont des exemples. Le journal (« marquer comme vu ») est cliquable pour de vrai, mais rien n'est sauvegardé après avoir fermé la page.</p>
+</div>
+
+<script>
+  // ---------------------------------------------------------------
+  // Données de démonstration
+  // ---------------------------------------------------------------
+  var CATEGORIES = [
+    { key: "theatre-contemporain", label: "Théâtre contemporain", fam: "theatre" },
+    { key: "theatre-classique", label: "Théâtre classique", fam: "theatre" },
+    { key: "danse-contemporaine", label: "Danse contemporaine", fam: "danse" },
+    { key: "ballet-classique", label: "Ballet classique", fam: "danse" },
+    { key: "cirque-contemporain", label: "Cirque contemporain", fam: "danse" },
+    { key: "cirque-trad", label: "Cirque traditionnel", fam: "danse" },
+    { key: "magie", label: "Magie", fam: "danse" },
+    { key: "battle-all-style", label: "Battle all style", fam: "musique" },
+    { key: "battle-electro", label: "Battle électro", fam: "musique" },
+    { key: "musique", label: "Musique", fam: "musique" },
+    { key: "drag", label: "Drag", fam: "musique" },
+    { key: "cabaret", label: "Cabaret", fam: "musique" },
+    { key: "comedie-musicale", label: "Comédie musicale", fam: "jeune" },
+    { key: "jeune-public", label: "Spectacle jeune public", fam: "jeune" }
+  ];
+  var catByKey = {};
+  CATEGORIES.forEach(function (c) { catByKey[c.key] = c; });
+
+  var SHOWS = [
+    { id: "traversee", title: "La Traversée", cat: "cirque-contemporain", company: "Compagnie Horizon", venue: "Cirque Électrique, Paris", rating: 4.6, duration: "1h20", synopsis: "Sept acrobates racontent un exil sur un plateau incliné, entre portés et musique live." , dates: ["12 sept.", "19 sept.", "3 oct."] },
+    { id: "liaisons", title: "Les Liaisons dangereuses", cat: "theatre-classique", company: "Troupe du Marais", venue: "Théâtre du Marais, Paris", rating: 4.2, duration: "2h10", synopsis: "Laclos revisité dans un huis clos épuré, jeu au cordeau.", dates: ["14 sept.", "21 sept."] },
+    { id: "vertiges", title: "Vertiges", cat: "danse-contemporaine", company: "Cie Vertige", venue: "Chaillot, Paris", rating: 4.8, duration: "55min", synopsis: "Une pièce pour quatre danseur·ses sur le déséquilibre, en apesanteur presque tout du long.", dates: ["18 sept.", "25 sept.", "2 oct."] },
+    { id: "sortilege", title: "Sortilège", cat: "magie", company: "Julien Cassel", venue: "Théâtre de Poche, Lyon", rating: 4.4, duration: "1h10", synopsis: "Close-up et grande illusion mêlés, sans grand orchestre ni paillettes — juste des tours qu'on ne voit pas venir.", dates: ["20 sept.", "27 sept."] },
+    { id: "cassenoisette", title: "Casse-Noisette", cat: "ballet-classique", company: "Ballet de l'Opéra", venue: "Opéra Bastille, Paris", rating: 4.7, duration: "1h50", synopsis: "La version de référence, reprise chaque saison, toujours aussi précise.", dates: ["5 déc.", "12 déc.", "19 déc."] },
+    { id: "kingdom", title: "Kingdom Battle", cat: "battle-all-style", company: "Collectif Kingdom", venue: "La Place, Paris", rating: 4.3, duration: "3h (avec battles)", synopsis: "Tournoi all style en battles éliminatoires, ambiance salle comble.", dates: ["27 sept."] },
+    { id: "mammamia", title: "Mamma Mia !", cat: "comedie-musicale", company: "Broadway Prod", venue: "Mogador, Paris", rating: 4.5, duration: "2h20", synopsis: "La comédie musicale ABBA, toujours aussi efficace en salle.", dates: ["tous les soirs", "sauf lundi"] },
+    { id: "cabaretmerveilles", title: "Le Cabaret des Merveilles", cat: "cabaret", company: "Compagnie Merveilles", venue: "Chez Louise, Paris", rating: 4.6, duration: "1h30", synopsis: "Chant, cirque et texte dans une salle de cent places, au plus près des artistes.", dates: ["13 sept.", "20 sept.", "27 sept."] },
+    { id: "dragodyssey", title: "Drag Odyssey", cat: "drag", company: "House of Odyssey", venue: "La Machine du Moulin Rouge, Paris", rating: 4.9, duration: "1h40", synopsis: "Cabaret drag en dix tableaux, live vocals, une des salles les plus demandées du moment.", dates: ["14 sept.", "28 sept."] },
+    { id: "nuitelectro", title: "Nuit Électro", cat: "musique", company: "Collectif Nocturne", venue: "La Bellevilloise, Paris", rating: 4.1, duration: "4h", synopsis: "Trois DJ, une nuit, plateau pensé pour danser du début à la fin.", dates: ["19 sept."] },
+    { id: "voyageplume", title: "Le Voyage de Plume", cat: "jeune-public", company: "Cie Petits Pas", venue: "Théâtre 13, Paris", rating: 4.5, duration: "45min", synopsis: "Un conte marionnettes pour les 4-8 ans, sur une plume qui cherche son oiseau.", dates: ["dim. 14h, tous les week-ends"] }
+  ];
+  var showById = {};
+  SHOWS.forEach(function (s) { showById[s.id] = s; });
+
+  var FEED = [
+    { who: "Camille", init: "C", showId: "vertiges", rating: 5, when: "hier" },
+    { who: "Léo", init: "L", showId: "kingdom", rating: 4, when: "il y a 3 jours" },
+    { who: "Camille", init: "C", showId: "sortilege", rating: 4, when: "la semaine dernière" }
+  ];
+
+  var RECO_IDS = ["dragodyssey", "cabaretmerveilles", "cassenoisette", "nuitelectro", "mammamia"];
+
+  // ---------------------------------------------------------------
+  // État (démo uniquement — perdu au rechargement)
+  // ---------------------------------------------------------------
+  var state = {
+    vus: { "liaisons": { rating: 4, date: "2 août 2026" }, "voyageplume": { rating: 5, date: "27 juil. 2026" } },
+    envies: { "traversee": true, "dragodyssey": true, "cabaretmerveilles": true }
+  };
+  var GOAL_TARGET = 20;
+
+  // ---------------------------------------------------------------
+  // Rendu
+  // ---------------------------------------------------------------
+  function starsHTML(rating) {
+    var full = Math.round(rating);
+    var html = '<span class="stars">';
+    for (var i = 1; i <= 5; i++) html += i <= full ? "★" : '<span class="empty">★</span>';
+    html += '</span><span class="rating-num">' + rating.toFixed(1) + '</span>';
+    return html;
+  }
+
+  function posterLetter(title) {
+    // évite que "Le/La/Les/L'" collent la même lettre à plusieurs affiches
+    var stripped = title.replace(/^(les?|la|l['’])\s*/i, "");
+    return (stripped || title).charAt(0).toUpperCase();
+  }
+
+  function posterHTML(show, extraClass) {
+    var fam = catByKey[show.cat].fam;
+    return '<div class="poster ' + (extraClass || "") + '" data-fam="' + fam + '">' + posterLetter(show.title) + "</div>";
+  }
+
+  function chipHTML(catKey) {
+    var c = catByKey[catKey];
+    return '<span class="chip" data-fam="' + c.fam + '">' + c.label + "</span>";
+  }
+
+  function renderCatGrid() {
+    var grid = document.getElementById("cat-grid");
+    grid.innerHTML = "";
+    CATEGORIES.forEach(function (c) {
+      var btn = document.createElement("button");
+      btn.className = "cat-tile";
+      btn.dataset.fam = c.fam;
+      btn.dataset.cat = c.key;
+      btn.textContent = c.label;
+      btn.addEventListener("click", function () {
+        activeCat = activeCat === c.key ? null : c.key;
+        renderCatGrid();
+        renderSearchResults();
+      });
+      if (activeCat === c.key) btn.dataset.active = "true";
+      grid.appendChild(btn);
+    });
+  }
+
+  var activeCat = null;
+
+  function renderSearchResults() {
+    var q = (document.getElementById("search-input").value || "").toLowerCase().trim();
+    var list = SHOWS.filter(function (s) {
+      var matchesQuery = !q || s.title.toLowerCase().indexOf(q) !== -1 || s.company.toLowerCase().indexOf(q) !== -1;
+      var matchesCat = !activeCat || s.cat === activeCat;
+      return matchesQuery && matchesCat;
+    });
+    document.getElementById("results-title").textContent = activeCat ? catByKey[activeCat].label : "Tous les spectacles";
+    var container = document.getElementById("search-results");
+    container.innerHTML = "";
+    if (!list.length) {
+      container.innerHTML = '<p class="empty-hint">Rien ne correspond — essaie une autre recherche.</p>';
+      return;
+    }
+    list.forEach(function (s) { container.appendChild(makeListRow(s)); });
+  }
+
+  function makeListRow(s, opts) {
+    opts = opts || {};
+    var row = document.createElement("div");
+    row.className = "list-row";
+    var sideHTML = "";
+    if (opts.side === "rating" && state.vus[s.id]) {
+      sideHTML = '<div class="side">' + starsHTML(state.vus[s.id].rating) + '<div class="sub">' + state.vus[s.id].date + "</div></div>";
+    } else if (opts.side === "date") {
+      sideHTML = '<div class="side sub">' + s.dates[0] + "</div>";
+    } else {
+      sideHTML = '<div class="side">' + starsHTML(s.rating) + "</div>";
+    }
+    row.innerHTML =
+      posterHTML(s) +
+      '<div class="info"><div class="title">' + s.title + '</div><div class="sub">' + chipHTML(s.cat) + " · " + s.company + "</div></div>" +
+      sideHTML;
+    row.addEventListener("click", function () { openDetail(s.id); });
+    return row;
+  }
+
+  function renderFeed() {
+    var el = document.getElementById("feed-list");
+    el.innerHTML = "";
+    FEED.forEach(function (f) {
+      var s = showById[f.showId];
+      var row = document.createElement("div");
+      row.className = "feed-row";
+      row.innerHTML =
+        '<div class="avatar">' + f.init + '</div>' +
+        '<div class="txt"><b>' + f.who + '</b> a vu <b>' + s.title + '</b> ' + starsHTML(f.rating) +
+        '<div class="when">' + f.when + '</div></div>';
+      row.addEventListener("click", function () { openDetail(s.id); });
+      el.appendChild(row);
+    });
+  }
+
+  function renderReco() {
+    var rail = document.getElementById("reco-rail");
+    rail.innerHTML = "";
+    RECO_IDS.forEach(function (id) {
+      var s = showById[id];
+      var card = document.createElement("div");
+      card.className = "show-card";
+      card.innerHTML = posterHTML(s, "") + '<div class="title">' + s.title + '</div><div class="meta">' + catByKey[s.cat].label + "</div>";
+      card.addEventListener("click", function () { openDetail(s.id); });
+      rail.appendChild(card);
+    });
+  }
+
+  function renderJournal() {
+    var vusIds = Object.keys(state.vus);
+    var enviesIds = Object.keys(state.envies).filter(function (id) { return !state.vus[id]; });
+
+    document.getElementById("stat-vus").textContent = vusIds.length;
+    document.getElementById("stat-envies").textContent = enviesIds.length;
+    document.getElementById("p-stat-vus").textContent = vusIds.length;
+
+    var avg = vusIds.length ? (vusIds.reduce(function (sum, id) { return sum + state.vus[id].rating; }, 0) / vusIds.length) : 0;
+    document.getElementById("stat-moy").textContent = vusIds.length ? avg.toFixed(1) : "—";
+    document.getElementById("p-stat-moy").textContent = vusIds.length ? avg.toFixed(1) : "—";
+
+    var pct = Math.min(100, Math.round((vusIds.length / GOAL_TARGET) * 100));
+    document.getElementById("goal-fill").style.width = pct + "%";
+    document.getElementById("goal-label").textContent = vusIds.length + " / " + GOAL_TARGET + " spectacles";
+
+    var vusEl = document.getElementById("journal-vus");
+    vusEl.innerHTML = "";
+    if (!vusIds.length) {
+      vusEl.innerHTML = '<p class="empty-hint">Rien de marqué comme vu pour l\'instant.</p>';
+    } else {
+      vusIds.sort(function (a, b) { return SHOWS.findIndex(function(s){return s.id===b;}) - SHOWS.findIndex(function(s){return s.id===a;}); });
+      vusIds.forEach(function (id) { vusEl.appendChild(makeListRow(showById[id], { side: "rating" })); });
+    }
+
+    var enviesEl = document.getElementById("journal-envies");
+    enviesEl.innerHTML = "";
+    if (!enviesIds.length) {
+      enviesEl.innerHTML = '<p class="empty-hint">Aucune envie enregistrée pour l\'instant.</p>';
+    } else {
+      enviesIds.forEach(function (id) { enviesEl.appendChild(makeListRow(showById[id], { side: "date" })); });
+    }
+
+    // favourite categories (profil) — derived from vus
+    var famCounts = {};
+    vusIds.forEach(function (id) {
+      var fam = catByKey[showById[id].cat].fam;
+      famCounts[fam] = (famCounts[fam] || 0) + 1;
+    });
+    var favEl = document.getElementById("fav-cats");
+    favEl.innerHTML = "";
+    var famList = Object.keys(famCounts);
+    if (!famList.length) {
+      favEl.innerHTML = '<p class="empty-hint" style="padding:0;">Se remplit au fil de ton journal.</p>';
+    } else {
+      var famLabel = { theatre: "Théâtre", danse: "Danse, cirque & magie", musique: "Musique, battles & cabaret", jeune: "Comédie musicale & jeune public" };
+      famList.forEach(function (fam) {
+        var chip = document.createElement("span");
+        chip.className = "chip";
+        chip.dataset.fam = fam;
+        chip.textContent = famLabel[fam];
+        favEl.appendChild(chip);
+      });
+    }
+  }
+
+  function renderAgenda() {
+    var el = document.getElementById("agenda-list");
+    el.innerHTML = "";
+    var enviesIds = Object.keys(state.envies).filter(function (id) { return !state.vus[id]; });
+    if (!enviesIds.length) {
+      el.innerHTML = '<p class="empty-hint">Ajoute des envies pour les voir apparaître ici.</p>';
+      return;
+    }
+    el.innerHTML = '<div class="agenda-month">Septembre 2026</div>';
+    enviesIds.forEach(function (id) {
+      var s = showById[id];
+      var row = document.createElement("div");
+      row.className = "agenda-row";
+      var day = (2 + enviesIds.indexOf(id) * 5) % 28 + 1;
+      row.innerHTML =
+        '<div class="agenda-date"><div class="d">' + day + '</div><div class="m">sept.</div></div>' +
+        '<div class="info"><div class="title">' + s.title + '</div><div class="sub">' + s.venue + "</div></div>";
+      row.addEventListener("click", function () { openDetail(s.id); });
+      el.appendChild(row);
+    });
+  }
+
+  function renderAll() {
+    renderFeed();
+    renderReco();
+    renderCatGrid();
+    renderSearchResults();
+    renderJournal();
+    renderAgenda();
+  }
+
+  // ---------------------------------------------------------------
+  // Navigation
+  // ---------------------------------------------------------------
+  function showScreen(name) {
+    document.querySelectorAll(".screen-panel").forEach(function (p) { p.classList.toggle("active", p.dataset.screen === name); });
+    document.querySelectorAll(".tab-btn").forEach(function (b) { b.dataset.active = b.dataset.screen === name ? "true" : "false"; });
+    document.getElementById("detail").classList.remove("open");
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(function (b) {
+    b.addEventListener("click", function () { showScreen(b.dataset.screen); });
+  });
+
+  document.querySelectorAll(".subtab-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".subtab-btn").forEach(function (x) { x.dataset.active = "false"; });
+      b.dataset.active = "true";
+      document.getElementById("journal-vus").style.display = b.dataset.jtab === "vus" ? "block" : "none";
+      document.getElementById("journal-envies").style.display = b.dataset.jtab === "envies" ? "block" : "none";
+    });
+  });
+
+  document.getElementById("search-input").addEventListener("input", renderSearchResults);
+  document.getElementById("detail-back").addEventListener("click", function () { document.getElementById("detail").classList.remove("open"); });
+
+  var pendingRatingShow = null;
+
+  function openDetail(id) {
+    var s = showById[id];
+    pendingRatingShow = id;
+    var fam = catByKey[s.cat].fam;
+    document.getElementById("detail-hero").style.background = "linear-gradient(150deg, var(--" +
+      (fam === "theatre" ? "brand" : fam === "danse" ? "gold" : fam === "musique" ? "teal" : "coral") +
+      "), color-mix(in srgb, var(--" + (fam === "theatre" ? "brand" : fam === "danse" ? "gold" : fam === "musique" ? "teal" : "coral") + ") 45%, black))";
+    document.getElementById("detail-title").textContent = s.title;
+
+    var isVu = !!state.vus[id];
+    var isEnvie = !!state.envies[id] && !isVu;
+
+    var html = "";
+    html += '<div class="detail-company">' + s.company + " · " + s.venue + "</div>";
+    html += '<div class="detail-meta-row">' + chipHTML(s.cat) + '<span style="color:var(--app-muted);">' + s.duration + "</span>" + starsHTML(isVu ? state.vus[id].rating : s.rating) + "</div>";
+    html += '<p class="detail-syn">' + s.synopsis + "</p>";
+    html += '<div class="detail-dates"><div class="block-title" style="margin-top:0;">Dates</div>';
+    s.dates.forEach(function (d) { html += '<div class="row"><span>' + d + '</span><span style="color:var(--brand); font-weight:700;">Réserver →</span></div>'; });
+    html += "</div>";
+    html += '<div class="detail-actions">';
+    if (isVu) {
+      html += '<button class="btn" id="btn-envie" disabled style="opacity:.55; cursor:default;">Déjà dans ton journal</button>';
+    } else {
+      html += '<button class="btn" id="btn-envie" data-on="' + isEnvie + '">' + (isEnvie ? "✓ Dans mes envies" : "Ajouter à mes envies") + "</button>";
+    }
+    html += '<button class="btn btn-primary" id="btn-vu">' + (isVu ? "Modifier ma note" : "Marquer comme vu") + "</button>";
+    html += "</div>";
+    html += '<div class="rate-picker" id="rate-picker"><p>Ta note</p><div class="rate-stars" id="rate-stars">' +
+      [1,2,3,4,5].map(function(n){ return '<span data-n="' + n + '">★</span>'; }).join("") +
+      '</div><button class="btn btn-primary confirm" id="rate-confirm">Ajouter à mon journal</button></div>';
+
+    document.getElementById("detail-body").innerHTML = html;
+    document.getElementById("detail").classList.add("open");
+
+    if (!isVu) {
+      document.getElementById("btn-envie").addEventListener("click", function () {
+        state.envies[id] = !state.envies[id];
+        renderJournal(); renderAgenda();
+        openDetail(id);
+      });
+    }
+
+    document.getElementById("btn-vu").addEventListener("click", function () {
+      var picker = document.getElementById("rate-picker");
+      picker.classList.toggle("open");
+      var current = isVu ? state.vus[id].rating : 0;
+      paintRateStars(current);
+    });
+
+    document.querySelectorAll("#rate-stars span").forEach(function (star) {
+      star.addEventListener("click", function () { paintRateStars(parseInt(star.dataset.n, 10)); });
+    });
+
+    document.getElementById("rate-confirm").addEventListener("click", function () {
+      var filled = document.querySelectorAll("#rate-stars span.filled").length || 4;
+      var today = "7 août 2026";
+      state.vus[id] = { rating: filled, date: today };
+      delete state.envies[id];
+      renderJournal(); renderAgenda();
+      showToast("Ajouté à ton journal ✓");
+      openDetail(id);
+    });
+  }
+
+  function paintRateStars(n) {
+    document.querySelectorAll("#rate-stars span").forEach(function (star) {
+      star.classList.toggle("filled", parseInt(star.dataset.n, 10) <= n);
+    });
+  }
+
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1800);
+  }
+
+  renderAll();
+  showScreen("accueil");
+</script>
+</body>
+</html>

@@ -20,6 +20,10 @@
     --border: #E1D7EC;
     --brand: #5B2A86;
     --brand-soft: #EFE3FA;
+    /* Bandeau d'en-tête : violet fixe, volontairement identique dans les deux
+       thèmes — c'est un habillage "scène" à part, pas une surface qui doit
+       s'inverser avec le thème (sinon le texte clair dessus devient illisible). */
+    --marquee-bg: #4C2A73;
     --gold: #A8691A;
     --coral: #C22A5F;
     --teal: #147F72;
@@ -92,7 +96,7 @@
   /* ---------- Header / marquee ---------- */
   .marquee {
     position: relative;
-    background: var(--brand);
+    background: var(--marquee-bg);
     color: #F8F3FF;
     overflow: hidden;
     padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3rem);
@@ -347,6 +351,27 @@
     font-weight: 700; font-size: 0.92rem;
     cursor: not-allowed;
   }
+  .mockup-btn.is-live {
+    background: var(--brand); color: #fff; border: 1px solid var(--brand);
+    cursor: pointer; text-decoration: none;
+  }
+
+  /* CTA maquette dans l'en-tête — repositionné ici une fois le premier
+     prototype prêt (voir journal du 7 août 2026). */
+  .header-cta {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: #F0B057; color: #241505;
+    font-weight: 800; font-size: 0.95rem;
+    padding: 0.8rem 1.3rem; border-radius: 999px;
+    text-decoration: none; margin: 0 0 1.75rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+  .header-cta:focus-visible { outline: 2.5px solid #fff; outline-offset: 2px; }
+  .header-cta .arrow { transition: transform 0.15s ease; }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-cta:hover .arrow { transform: translateX(3px); }
+  }
 
   .journal { display: flex; flex-direction: column; gap: 1.1rem; }
   .journal-entry { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; }
@@ -375,7 +400,11 @@
     <p class="marquee-eyebrow">Tableau de bord du projet</p>
     <h1 class="marquee-title">Find Your Scene</h1>
     <p class="marquee-sub">Le journal et la communauté du spectacle vivant — théâtre, danse, cirque, magie, musique, battles, drag, cabaret. Suivi en direct de la construction de l'application, de l'idée à la maquette testable.</p>
-    <p class="marquee-meta" style="margin: -1.25rem 0 1.75rem; max-width: 54ch;">Portée actuelle : un test avec l'entourage proche (moins de dix personnes), sans déploiement public — le bilan business plan attend au moins une semaine de test réel.</p>
+    <p class="marquee-meta" style="margin: -1.25rem 0 1.25rem; max-width: 54ch;">Portée actuelle : un test avec l'entourage proche (moins de dix personnes), sans déploiement public — le bilan business plan attend au moins une semaine de test réel.</p>
+
+    <a class="header-cta" href="maquette/" target="_blank" rel="noopener">
+      Ouvrir la maquette interactive <span class="arrow">→</span>
+    </a>
 
     <div class="stat-row">
       <div class="ring-card">
@@ -397,7 +426,7 @@
       <div class="phase-card">
         <span class="t2">Dernière mise à jour</span>
         <span class="t1">7 août 2026</span>
-        <span class="t3">Acte II clos — 6 décisions produit validées</span>
+        <span class="t3">Premier prototype cliquable en ligne</span>
       </div>
     </div>
 
@@ -411,14 +440,10 @@
 <main class="wrap">
 
   <!--
-    La maquette est volontairement placée en tout premier : c'est ce que la
-    porteuse du projet veut pouvoir trouver le plus vite. Tant que le bouton
-    est désactivé ("Maquette à venir"), il reste ici. Le jour où la première
-    maquette existe et que ce bouton devient actif, il faudra le repositionner
-    encore plus haut / le rendre plus visible (par ex. en CTA directement dans
-    le bandeau d'en-tête, à côté de l'anneau de progression) plutôt que de le
-    laisser en simple section — ne pas se contenter de changer son style sur
-    place.
+    Fait le 7 août 2026 : la maquette est passée active, et le point d'accès
+    principal a bien bougé dans l'en-tête (.header-cta) comme prévu ici — cette
+    section reste en plus, en premier dans le corps de page, comme rappel
+    permanent et pour poser le contexte (contenu de démo, pas encore l'app finale).
   -->
   <section aria-labelledby="mockup-title">
     <div class="section-head">
@@ -426,8 +451,8 @@
       <h2 class="section-title" id="mockup-title">La maquette</h2>
     </div>
     <div class="card mockup-card span-12" style="display:flex;">
-      <p style="margin:0; color:var(--text-muted); max-width:64ch;">Dès que le prototype interactif (maquette Figma) sera prêt, le lien de test apparaîtra ici — et seulement ici. Ce sera le point d'entrée unique pour l'essayer, pas besoin de le chercher ailleurs.</p>
-      <span class="mockup-btn" aria-disabled="true">Maquette à venir</span>
+      <p style="margin:0; color:var(--text-muted); max-width:64ch;">Premier prototype cliquable : les 5 écrans principaux (Accueil, Chercher, Mes spectacles, Profil, Agenda) et la fiche spectacle, avec des spectacles d'exemple dans les 14 catégories. Le geste central — marquer un spectacle comme vu et le noter — est vraiment cliquable. Rien n'est sauvegardé après avoir fermé la page : c'est fait pour se faire une idée, pas encore pour l'usage réel.</p>
+      <a class="mockup-btn is-live" href="maquette/" target="_blank" rel="noopener">Ouvrir la maquette →</a>
     </div>
   </section>
 
@@ -589,20 +614,20 @@
     {
       roman: "III",
       title: "Design UX/UI & identité visuelle",
-      desc: "Palette colorée et accessible, typographie claire, wireframes des écrans clés (Accueil, Mes spectacles, Chercher, Profil, Agenda).",
-      status: "todo",
-      percent: 0,
+      desc: "Palette colorée et accessible (violet, or, corail, sarcelle par familles de catégories), typographie claire, 5 écrans clés dessinés directement dans la maquette interactive de l'Acte IV.",
+      status: "done",
+      percent: 100,
       weight: 20,
-      date: "cible septembre 2026"
+      date: "7 août 2026"
     },
     {
       roman: "IV",
       title: "Maquette interactive",
-      desc: "Prototype cliquable et testable — le lien apparaîtra dans la section « À tester » ci-dessus.",
-      status: "todo",
-      percent: 0,
+      desc: "Premier prototype cliquable en ligne — <a href=\"maquette/\" target=\"_blank\" rel=\"noopener\">à ouvrir ici</a>. Les 5 écrans et la fiche spectacle fonctionnent, avec le geste central (marquer vu + noter) vraiment interactif. Reste à couvrir : réservation, wallet, réductions, agenda plus riche.",
+      status: "progress",
+      percent: 60,
       weight: 15,
-      date: "cible octobre 2026"
+      date: "7 août 2026"
     },
     {
       roman: "V",
@@ -634,6 +659,10 @@
   ];
 
   var journalEntries = [
+    {
+      date: "7 août 2026",
+      text: "Actes III et IV avancés d'un coup pour avoir quelque chose de testable ce soir : identité visuelle posée (violet, or, corail, sarcelle) et premier prototype interactif en ligne — 5 écrans, fiche spectacle, et le geste « marquer comme vu + noter » vraiment cliquable. Le bouton d'accès à la maquette a bougé dans l'en-tête du dashboard, comme prévu. Corrigé au passage : un bug de contraste qui rendait l'en-tête du dashboard peu lisible en thème sombre."
+    },
     {
       date: "7 août 2026",
       text: "Précision de portée : ce projet vise pour l'instant l'entourage proche (moins de dix personnes), pas un déploiement public. Les Actes V à VII et le périmètre de la version testable sont adaptés en conséquence — le business plan attendra le retour d'au moins une semaine de test réel."
