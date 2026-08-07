@@ -14,7 +14,7 @@ La maquette interactive vit dans `maquette/index.html`, servie par Pages à `/ch
 
 ## Mettre à jour l'avancement
 
-Toutes les données affichées (les 7 actes du projet, leur statut, leur poids, le journal de bord) sont regroupées dans le bloc `<script>` en bas de `index.html`, dans les tableaux `phases` et `journalEntries`. Modifier une entrée — par exemple passer un acte de `"todo"` à `"progress"` ou `"done"`, ajuster son `percent` — met automatiquement à jour l'anneau de progression globale, la barre de répartition et la timeline, sans toucher au reste de la page.
+Toutes les données affichées (les 7 actes du projet, leur statut, leur poids, le journal de bord, les retours du test) sont regroupées dans le bloc `<script>` en bas de `index.html`, dans les tableaux `phases`, `journalEntries` et `feedback`. Modifier une entrée — par exemple passer un acte de `"todo"` à `"progress"` ou `"done"`, ajuster son `percent`, ou ajouter un objet dans `feedback` — met automatiquement à jour l'anneau de progression globale, la barre de répartition, la timeline et la section « Retours du test », sans toucher au reste de la page.
 
 ## Recherche déjà effectuée
 
@@ -26,4 +26,5 @@ Le détail complet est dans le tableau de bord lui-même (sections « Ce qui exi
 ## Documents
 
 - [`docs/02-specifications-fonctionnelles.md`](docs/02-specifications-fonctionnelles.md) — spécifications fonctionnelles (Acte II), validées : parcours par onglet, modèle de données, catégories, périmètre de la version testable.
-- [`maquette/index.html`](maquette/index.html) — prototype cliquable (Actes III & IV) : 5 écrans, fiche spectacle, contenu d'exemple dans les 14 catégories. État de démonstration, rien n'est persisté après rechargement.
+- [`maquette/index.html`](maquette/index.html) — prototype cliquable (Actes III & IV) : 5 écrans, fiche spectacle, contenu d'exemple dans les 14 catégories. État de démonstration, rien n'est persisté après rechargement. Illustrations en SVG dessinées à la main — à remplacer par de vraies photos libres de droit depuis une session avec un accès réseau plus large.
+- [`docs/03-questions-testeurs.md`](docs/03-questions-testeurs.md) — questions à poser à l'entourage après le test (Acte VI), pensées pour des réponses concrètes plutôt que des impressions vagues.
