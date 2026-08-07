@@ -395,7 +395,7 @@
       </div>
       <div class="phase-card">
         <span class="t2">Dernière mise à jour</span>
-        <span class="t1">7 août 2026</span>
+        <span class="t1">6 août 2026</span>
         <span class="t3">Cadrage terminé — planning en 7 actes posé</span>
       </div>
     </div>
@@ -408,6 +408,27 @@
 </header>
 
 <main class="wrap">
+
+  <!--
+    La maquette est volontairement placée en tout premier : c'est ce que la
+    porteuse du projet veut pouvoir trouver le plus vite. Tant que le bouton
+    est désactivé ("Maquette à venir"), il reste ici. Le jour où la première
+    maquette existe et que ce bouton devient actif, il faudra le repositionner
+    encore plus haut / le rendre plus visible (par ex. en CTA directement dans
+    le bandeau d'en-tête, à côté de l'anneau de progression) plutôt que de le
+    laisser en simple section — ne pas se contenter de changer son style sur
+    place.
+  -->
+  <section aria-labelledby="mockup-title">
+    <div class="section-head">
+      <span class="section-eyebrow">À tester</span>
+      <h2 class="section-title" id="mockup-title">La maquette</h2>
+    </div>
+    <div class="card mockup-card span-12" style="display:flex;">
+      <p style="margin:0; color:var(--text-muted); max-width:64ch;">Dès que le prototype interactif (maquette Figma) sera prêt, le lien de test apparaîtra ici — et seulement ici. Ce sera le point d'entrée unique pour l'essayer, pas besoin de le chercher ailleurs.</p>
+      <span class="mockup-btn" aria-disabled="true">Maquette à venir</span>
+    </div>
+  </section>
 
   <section aria-labelledby="timeline-title">
     <div class="section-head">
@@ -527,17 +548,6 @@
     </div>
   </section>
 
-  <section aria-labelledby="mockup-title">
-    <div class="section-head">
-      <span class="section-eyebrow">À tester</span>
-      <h2 class="section-title" id="mockup-title">La maquette</h2>
-    </div>
-    <div class="card mockup-card span-12" style="display:flex;">
-      <p style="margin:0; color:var(--text-muted); max-width:64ch;">Dès que le prototype interactif (maquette Figma) sera prêt, le lien de test apparaîtra ici — et seulement ici. Ce sera le point d'entrée unique pour l'essayer, pas besoin de le chercher ailleurs.</p>
-      <span class="mockup-btn" aria-disabled="true">Maquette à venir</span>
-    </div>
-  </section>
-
   <section aria-labelledby="journal-title">
     <div class="section-head">
       <span class="section-eyebrow">Suivi</span>
@@ -564,7 +574,7 @@
       status: "done",
       percent: 100,
       weight: 10,
-      date: "7 août 2026"
+      date: "6 août 2026"
     },
     {
       roman: "II",
@@ -624,7 +634,7 @@
 
   var journalEntries = [
     {
-      date: "7 août 2026",
+      date: "6 août 2026",
       text: "Mise en place de ce tableau de bord. Synthèse du concept à partir de la page Notion, recherche des applications proches (Dixit/OnParticipe, Mezzanine, Theatregoer) et des dépôts GitHub utiles (todam-app/todam en particulier). Planning posé en 7 actes."
     }
   ];
