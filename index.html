@@ -266,21 +266,6 @@
   .chip .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
   .chip[data-status="done"] { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, var(--border)); }
   .chip[data-status="progress"] { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, var(--border)); }
-  .chip[data-verdict="positif"] { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, var(--border)); }
-  .chip[data-verdict="mitige"] { color: var(--text-muted); }
-  .chip[data-verdict="negatif"] { color: var(--coral); border-color: color-mix(in srgb, var(--coral) 45%, var(--border)); }
-
-  .empty-hint { color: var(--text-muted); font-size: 0.95rem; margin: 0; }
-
-  .feedback-card + .feedback-card { margin-top: 1rem; }
-  .feedback-head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.9rem; }
-  .feedback-name { font-weight: 800; font-size: 1.02rem; }
-  .feedback-date { font-size: 0.82rem; color: var(--text-muted); font-variant-numeric: tabular-nums; margin-right: auto; }
-  .fb-row { margin-bottom: 0.65rem; }
-  .fb-row:last-of-type { margin-bottom: 0; }
-  .fb-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--coral); margin-bottom: 0.15rem; }
-  .fb-row p { margin: 0; font-size: 0.95rem; }
-  .fb-quote { margin: 0.9rem 0 0; padding-left: 0.9rem; border-left: 3px solid var(--border); color: var(--text-muted); font-size: 0.92rem; }
 
   .mini-bar { flex: 1 1 120px; max-width: 220px; height: 6px; border-radius: 999px; background: var(--bg-sunken); overflow: hidden; }
   .mini-bar > span { display: block; height: 100%; border-radius: 999px; background: var(--brand); }
@@ -441,7 +426,7 @@
       <div class="phase-card">
         <span class="t2">Dernière mise à jour</span>
         <span class="t1">7 août 2026</span>
-        <span class="t3">Espace retours du test prêt à être rempli</span>
+        <span class="t3">Retours gérés directement sur WhatsApp</span>
       </div>
     </div>
 
@@ -469,15 +454,6 @@
       <p style="margin:0; color:var(--text-muted); max-width:64ch;">Premier prototype cliquable : les 5 écrans principaux (Accueil, Chercher, Mes spectacles, Profil, Agenda) et la fiche spectacle, avec des spectacles d'exemple dans les 14 catégories. Le geste central — marquer un spectacle comme vu et le noter — est vraiment cliquable. Rien n'est sauvegardé après avoir fermé la page : c'est fait pour se faire une idée, pas encore pour l'usage réel.</p>
       <a class="mockup-btn is-live" href="maquette/" target="_blank" rel="noopener">Ouvrir la maquette →</a>
     </div>
-  </section>
-
-  <section aria-labelledby="feedback-title">
-    <div class="section-head">
-      <span class="section-eyebrow">Entourage proche</span>
-      <h2 class="section-title" id="feedback-title">Retours du test</h2>
-      <p class="section-desc">Ce que dit ton entourage après avoir essayé la maquette — à remplir au fur et à mesure, pour que ça reste ici plutôt que dispersé dans des messages WhatsApp.</p>
-    </div>
-    <div id="feedback-list"></div>
   </section>
 
   <section aria-labelledby="timeline-title">
@@ -685,7 +661,11 @@
   var journalEntries = [
     {
       date: "7 août 2026",
-      text: "Ajout d'un espace « Retours du test » sur le dashboard pour centraliser ce que dira l'entourage, plutôt que de le laisser dispersé dans des messages — vide pour l'instant, à remplir dès les premiers retours. Rédaction d'une petite liste de questions à poser aux testeurs (<a href=\"docs/03-questions-testeurs.md\" target=\"_blank\" rel=\"noopener\">le document</a>), pensées pour obtenir des réponses concrètes plutôt que des impressions vagues."
+      text: "Retour en arrière sur l'espace « Retours du test » et sur la liste de questions aux testeurs, ajoutés puis retirés le même jour : une rubrique statique qu'il aurait fallu remplir à la main n'apportait rien de plus qu'un message direct. Les retours de l'entourage se feront sur WhatsApp, relayés directement."
+    },
+    {
+      date: "7 août 2026",
+      text: "Ajout d'un espace « Retours du test » sur le dashboard pour centraliser ce que dira l'entourage, plutôt que de le laisser dispersé dans des messages — vide pour l'instant, à remplir dès les premiers retours. Rédaction d'une petite liste de questions à poser aux testeurs, pensées pour obtenir des réponses concrètes plutôt que des impressions vagues."
     },
     {
       date: "7 août 2026",
@@ -711,15 +691,6 @@
       date: "6 août 2026",
       text: "Mise en place de ce tableau de bord. Synthèse du concept à partir de la page Notion, recherche des applications proches (Dixit/OnParticipe, Mezzanine, Theatregoer) et des dépôts GitHub utiles (todam-app/todam en particulier). Planning posé en 7 actes."
     }
-  ];
-
-  // Retours du test entourage — vide au départ, à remplir au fil des
-  // réactions. Un objet par personne ; "verdict" est "positif", "mitige",
-  // "negatif", ou "" si pas encore tranché.
-  var feedback = [
-    // { name: "Camille", date: "10 août 2026", verdict: "positif",
-    //   liked: "Ce qu'elle a aimé.", blocked: "Ce qui a bloqué ou pas été clair.",
-    //   bugs: "Bugs remarqués (optionnel).", quote: "Une phrase marquante (optionnel)." }
   ];
 
   // ---- Rendu ----
@@ -773,28 +744,6 @@
       '</div>';
     actsEl.appendChild(act);
   });
-
-  var verdictLabel = { positif: "Partant·e", mitige: "Mitigé·e", negatif: "Pas convaincu·e" };
-
-  var feedbackEl = document.getElementById("feedback-list");
-  if (!feedback.length) {
-    feedbackEl.innerHTML = '<div class="card span-12"><p class="empty-hint">Pas encore de retour — reviens ici dès que quelqu\'un de ton entourage a testé la maquette. <a href="docs/03-questions-testeurs.md" target="_blank" rel="noopener">Quelques questions à lui poser</a> si tu veux un point de départ.</p></div>';
-  } else {
-    feedback.forEach(function (f) {
-      var card = document.createElement("div");
-      card.className = "card feedback-card span-12";
-      var verdictChip = f.verdict ? '<span class="chip" data-verdict="' + f.verdict + '">' + verdictLabel[f.verdict] + "</span>" : "";
-      var rows = "";
-      if (f.liked) rows += '<div class="fb-row"><span class="fb-label">A aimé</span><p>' + f.liked + "</p></div>";
-      if (f.blocked) rows += '<div class="fb-row"><span class="fb-label">A bloqué / pas clair</span><p>' + f.blocked + "</p></div>";
-      if (f.bugs) rows += '<div class="fb-row"><span class="fb-label">Bugs remarqués</span><p>' + f.bugs + "</p></div>";
-      var quote = f.quote ? '<p class="fb-quote">« ' + f.quote + ' »</p>' : "";
-      card.innerHTML =
-        '<div class="feedback-head"><span class="feedback-name">' + f.name + '</span><span class="feedback-date">' + f.date + "</span>" + verdictChip + "</div>" +
-        rows + quote;
-      feedbackEl.appendChild(card);
-    });
-  }
 
   var journalEl = document.getElementById("journal");
   journalEntries.forEach(function (e) {
