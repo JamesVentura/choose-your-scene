@@ -2,6 +2,8 @@
 
 > Statut : **validé le 7 août 2026**. Ce document détaille ce qui a été posé dans l'idée d'origine (page Notion *Find Your Scene*), rendu concret et testable, et tranché sur les six points qui restaient ouverts (§7).
 
+> **Portée actuelle (précisée le 7 août 2026) :** ce n'est pas un lancement public. La cible, c'est l'entourage proche de la porteuse du projet — **moins de dix personnes** — pour un vrai test d'usage. Aucun déploiement en ligne ni publication sur les stores n'est prévu pour l'instant. La réflexion business plan n'est pas d'actualité : elle viendra une fois qu'au moins une semaine de test réel aura eu lieu. Ça allège une partie du périmètre (§5) et ça redéfinit ce que sont les Actes VI et VII de la timeline.
+
 ## 1. Principes directeurs
 
 - **Un journal avant un catalogue.** L'usage central, c'est noter ce qu'on a vu — comme sur Letterboxd ou Babelio. Le catalogue (fiches spectacle, compagnie) est le support qui rend ce journal possible, pas l'inverse.
@@ -110,13 +112,17 @@ Offres réservées aux utilisateurs de l'application, rattachées à des spectac
 ### Modération
 Signalement disponible sur tout profil ou avis. Pour le MVP, chaque signalement est validé par **une personne dédiée** côté Find Your Scene avant toute décision — pas de suspension automatique par seuil, pour éviter les faux positifs et les abus du signalement. Une personne bannie reçoit une explication : "cette personne n'est pas sur l'application car elle ne respecte pas l'éthique portée par le site."
 
-## 5. Périmètre MVP
+## 5. Périmètre de la version testable (Acte V)
 
-**Dans le MVP (Acte V) :**
+Toujours appelée "MVP" ci-dessous par commodité, mais à comprendre comme **la version installée sur le téléphone de moins de dix personnes**, pas une version publique.
+
+**Dans cette version :**
 Fiche spectacle, fiche compagnie/artiste, journal personnel (vu / envies), avis et notes, recherche et filtres par catégorie, profil, objectifs simples, modération de base.
 
-**Repoussé après le MVP :**
-Import automatique des billets depuis les e-mails et intégration Apple/Google Wallet, comptes compagnie en self-service (revendication de fiche), réductions et jeux-concours, recommandations avancées par algorithme (une version simple par catégories favorites suffit au lancement), signalement communautaire à seuil automatique (la validation humaine reste la règle au lancement), extension hors de France.
+**Repoussé après cette version (donc après le retour de l'entourage, pas avant) :**
+Import automatique des billets depuis les e-mails et intégration Apple/Google Wallet, comptes compagnie en self-service (revendication de fiche), réductions et jeux-concours, recommandations avancées par algorithme (une version simple par catégories favorites suffit), signalement communautaire à seuil automatique (la validation humaine reste la règle), extension hors de France, **et plus largement tout ce qui suppose un public au-delà de l'entourage** : publication sur l'App Store / Google Play, infrastructure pensée pour monter en charge, business plan.
+
+**Conséquence pratique pour l'Acte IV et l'Acte V :** pas besoin de viser une distribution grand public tout de suite — une installation directe (lien de test, profil de développement) sur les téléphones du cercle proche suffit. Ça simplifie la maquette comme le développement, et ça peut être revu si le test se passe bien et qu'on veut aller plus loin.
 
 ## 6. Ce qu'on réutilise de la recherche (Acte I)
 
