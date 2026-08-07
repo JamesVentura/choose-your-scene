@@ -18,3 +18,7 @@ Toutes les données affichées (les 7 actes du projet, leur statut, leur poids, 
 - **Dépôts GitHub explorés** : [todam-app/todam](https://github.com/todam-app/todam) (le plus proche en ambition — journal open-source du spectacle vivant, monorepo Expo + Fastify + PostgreSQL), [jameslittle230/thtr](https://github.com/jameslittle230/thtr), des clones Letterboxd pour les patterns UI de notation, et [StageOps-EIP/StageOps](https://github.com/StageOps-EIP/StageOps) côté régie technique.
 
 Le détail complet est dans le tableau de bord lui-même (sections « Ce qui existe déjà » et « Dépôts GitHub explorés »).
+
+## Documents
+
+- [`docs/02-specifications-fonctionnelles.md`](docs/02-specifications-fonctionnelles.md) — spécifications fonctionnelles (Acte II) : parcours par onglet, modèle de données, catégories, périmètre du MVP, questions ouvertes en attente de validation.
